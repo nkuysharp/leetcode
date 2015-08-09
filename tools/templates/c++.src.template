@@ -1,0 +1,12 @@
+#ifndef __LEETCODE_${PROBLEM}_H__
+#define __LEETCODE_${PROBLEM}_H__
+#include "../common.h"
+
+Class Solution {
+public:
+    
+};
+
+
+#endif
+

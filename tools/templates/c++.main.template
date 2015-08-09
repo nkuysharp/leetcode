@@ -1,0 +1,11 @@
+#include <iostream>
+#include "$SOLUTION" 
+
+using namespace std;
+
+int main()
+{
+    Class Solution;
+    return 0;
+}
+
