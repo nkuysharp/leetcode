@@ -1,0 +1,5 @@
+README
+
+features:
+1. a util tool to create problem directory containing source files and test-case files.
+2. multi language support for testing. current available: c++ and javascript  
