@@ -1,6 +1,8 @@
-run: $SRC_FILE_NAME $MAIN_FILE_NAME
-	g++ -std=c++11 -Wall -g $MAIN_FILE_NAME -o run
-	./run
+CFLAG = -std=c++11 -Wall -g
+all: $CPP_TARGET $JS_TARGET
 
+${CPP_SECTION}
+
+${JS_SECTION}
 
 

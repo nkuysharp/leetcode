@@ -1,0 +1,4 @@
+$JS_TARGET: $SRC_FILENAME $MAIN_FILENAME
+	    @echo "------------- test for javascript -------------"
+	    node $MAIN_FILENAME
+

@@ -1,31 +1,55 @@
 #! /usr/bin/python
-
 import sys
 import string
 import exceptions
 import os
-
 
 TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
 CPP_SRC_TEMPLATE = os.path.join(TOOL_DIR, "templates/c++.src.template")
 CPP_MAIN_TEMPLATE = os.path.join(TOOL_DIR, "templates/c++.main.template")
 JS_SRC_TEMPLATE = os.path.join(TOOL_DIR, "templates/js.src.template")
 JS_MAIN_TEMPLATE = os.path.join(TOOL_DIR, "templates/js.main.template")
-MAKE_FILE_TEMPLTE = os.path.join(TOOL_DIR, "templates/makefile.template")
+MAKE_FILE_TEMPLATE = os.path.join(TOOL_DIR, "templates/makefile.template")
+CPP_MAKE_FILE_SECTION = os.path.join(TOOL_DIR, "templates/make.c++.section.template")
+JS_MAKE_FILE_SECTION = os.path.join(TOOL_DIR, "templates/make.js.section.template")
 PROBLEM_ROOT_DIR = "./"
+SUPPORTED_LANGUAGES = ['c++', 'js']
+
+TEMPLATE_TABLE = {'c++':{'src_template':CPP_SRC_TEMPLATE,
+                         'main_template':CPP_MAIN_TEMPLATE,
+                         'src_suffix':'h',
+                         'main_suffix':'cpp',
+                         'make_section':CPP_MAKE_FILE_SECTION,
+                         'target-key':'CPP_TARGET',
+                         'section-key':'CPP_SECTION'},
+                  'js':{'src_template':JS_SRC_TEMPLATE,
+                        'main_template':JS_MAIN_TEMPLATE,
+                        'src_suffix':'js',
+                        'main_suffix':'js',
+                        'make_section':JS_MAKE_FILE_SECTION,
+                        'target-key':'JS_TARGET',
+                        'section-key':'JS_SECTION'},
+                  'makefile':MAKE_FILE_TEMPLATE}
+
+
+TEMPLATE_VALUES = {TEMPLATE_TABLE['c++']['section-key']:'',
+                   TEMPLATE_TABLE['c++']['target-key']:'',
+                   TEMPLATE_TABLE['js']['section-key']:'',
+                   TEMPLATE_TABLE['js']['target-key']:''}
+
 
 
 
 def Usage():
     print "Usage:"
-    print "python %s (problem-name)"%(sys.argv[0])
+    print "python %s (problem-name) [languages]"%(sys.argv[0])
+    print "Options:"
+    print "problem-name: \t\t\tSpecify Problem name"
+    print "languages: \t\t\tSpecify languages to use. e.g. 'c++', 'c++,js'"
 
 
 def CamelCase(problem_name):
     return ''.join(problem_name.title().split())
-
-
-
     
 def GenerateSrcFromTemplates(src_template,
                              main_template,
@@ -53,29 +77,49 @@ def GenerateSrcFromTemplates(src_template,
     print "[info] file: %s is generated."%(main_filename)
         
         
-def GenerateSrcFiles(prob_name, lang='c++'):
-    src_template = ''
-    main_template = ''
-    src_suffix = ''
-    main_suffix = ''
-    if (lang == 'c++'):
-        src_template  = CPP_SRC_TEMPLATE
-        main_template = CPP_MAIN_TEMPLATE
-        src_suffix = "h"
-        main_suffix = "cpp"
-    elif lang == 'js':
-        src_template = JS_SRC_TEMPLATE
-        main_tempalte = JS_MAIN_TEMPLATE
-        src_suffix = "js"
-        main_suffix = "js"
-    else:
-        raise RuntimeError("Unsupported language type [%s]"%(lang))
+def GenerateSrcFiles(prob_name, lang_list):
+    for lang in lang_list:
+        if lang not in SUPPORTED_LANGUAGES:
+            raise RuntimeError("Unsupported language type [%s]"%(lang))
 
-    GenerateSrcFromTemplates(src_template,
-                             main_template,
-                             prob_name,
-                             src_suffix,
-                             main_suffix)
+        src_template = TEMPLATE_TABLE[lang]['src_template']
+        main_template = TEMPLATE_TABLE[lang]['main_template']
+        src_suffix = TEMPLATE_TABLE[lang]['src_suffix']
+        main_suffix = TEMPLATE_TABLE[lang]['main_suffix']
+
+        GenerateSrcFromTemplates(src_template,
+                                 main_template,
+                                 prob_name,
+                                 src_suffix,
+                                 main_suffix)
+
+def GenerateLangSection(problem_name, lang):
+    dirname = os.path.abspath(os.path.join(PROBLEM_ROOT_DIR, problem_name.title()))
+    src_filename = "%s.%s"%(CamelCase(problem_name), TEMPLATE_TABLE[lang]['src_suffix'])
+    main_filename = "main.%s"%(TEMPLATE_TABLE[lang]['main_suffix'])
+    with open(TEMPLATE_TABLE[lang]['make_section'], "r") as infile:
+        values = {}
+        values['SRC_FILENAME'] = src_filename
+        values['MAIN_FILENAME'] = main_filename
+        values[TEMPLATE_TABLE[lang]['target-key']] = "run-%s"%(lang)
+        file_template = string.Template(infile.read())
+        return file_template.substitute(values)
+        
+def GenerateMakeFile(problem_name, lang_list):
+    dirname = os.path.abspath(os.path.join(PROBLEM_ROOT_DIR, problem_name.title()))
+    for lang in lang_list:
+        if lang not in SUPPORTED_LANGUAGES:
+            raise RuntimeError("Unsupported language type [%s]"%(lang))
+
+    mk_file_name = os.path.join(dirname, "makefile")
+    with open(mk_file_name, "w") as outfile, open(TEMPLATE_TABLE['makefile'], 'r') as infile:
+        for lang in lang_list:
+            TEMPLATE_VALUES[TEMPLATE_TABLE[lang]['target-key']] = "run-%s"%(lang)
+            TEMPLATE_VALUES[TEMPLATE_TABLE[lang]['section-key']] = GenerateLangSection(problem_name, lang)
+
+        file_template = string.Template(infile.read())
+        outfile.write(file_template.substitute(TEMPLATE_VALUES))
+        print "[info] file: %s is generated."%(mk_file_name)
 
 def CreateProblemDirectory(prob_name):
     dirname = os.path.abspath(os.path.join(PROBLEM_ROOT_DIR, prob_name.title()))
@@ -91,11 +135,13 @@ if __name__ == "__main__":
         exit()
 
     prob_name = sys.argv[1]
+    lang_list = ['c++']
+    if (len(sys.argv) > 2):
+        lang_list = sys.argv[2].split(',')
+        lang_list = [lang.strip() for lang in lang_list]
+    
     dirname = CreateProblemDirectory(prob_name)
-    GenerateSrcFiles(prob_name, 'c++')
-    #GenerateMakeFile(dirname, prob_name)
+    GenerateSrcFiles(prob_name, lang_list)
+    GenerateMakeFile(prob_name, lang_list)
     
     
-    
-
-        

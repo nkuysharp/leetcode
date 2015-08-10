@@ -1,8 +1,8 @@
 #ifndef __LEETCODE_${PROBLEM}_H__
 #define __LEETCODE_${PROBLEM}_H__
-#include "../common.h"
+#include "../common/common.h"
 
-Class Solution {
+class Solution {
 public:
     
 };

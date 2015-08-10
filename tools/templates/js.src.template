@@ -1,0 +1,16 @@
+// leetcode problem: $PROBLEM
+// run with node.js
+
+var ${PROBLEM}_func = function () {
+
+
+
+};
+
+module.exports = { $PROBLEM: ${PROBLEM}_func };
+
+
+
+
+
+

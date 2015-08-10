@@ -1,0 +1,8 @@
+var TESTLIB = require("../common/testlib.js")
+var solution = require("./${SOLUTION}")
+
+// test case like this 
+// TESTLIB.ASSERT_TRUE(expression)
+// TESTLIB.ASSERT_FALSE(expression)
+
+

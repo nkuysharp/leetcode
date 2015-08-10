@@ -1,0 +1,6 @@
+$CPP_TARGET: $SRC_FILENAME $MAIN_FILENAME
+	     g++ $$(CFLAG) $MAIN_FILENAME -o $CPP_TARGET
+	     @echo "--------- test for c++ ----------"
+	     ./$CPP_TARGET
+
+
