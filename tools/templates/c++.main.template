@@ -1,5 +1,6 @@
 #include <iostream>
 #include "$SOLUTION" 
+#include "../common/testlib.h"
 
 using namespace std;
 
