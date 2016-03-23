@@ -53,18 +53,27 @@ namespace leetcode_util
 	return retStr;
     }
     
-    bool Equal(const std::string& lhs, const std::string& rhs) { return lhs == rhs; }
+    // bool Equal(const std::string& lhs, const std::string& rhs) { return lhs == rhs; }
     bool Equal(const char* lhs, const char* rhs) { return std::strcmp(lhs, rhs) == 0; }
+    
+    template <typename T>
+    bool Equal(const T& lhs, const T& rhs) { return lhs == rhs; }
 
     template <typename T> 
     bool Equal(const std::vector<T>& lhs, const std::vector<T>& rhs)
     {
 	return std::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
+
+    
 };
 
 
 #endif
+
+
+
+
 
 
 

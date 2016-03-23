@@ -114,7 +114,7 @@ def GenerateMakeFile(problem_name, lang_list):
     mk_file_name = os.path.join(dirname, "makefile")
     with open(mk_file_name, "w") as outfile, open(TEMPLATE_TABLE['makefile'], 'r') as infile:
         for lang in lang_list:
-            TEMPLATE_VALUES[TEMPLATE_TABLE[lang]['target-key']] = "run-%s"%(lang)
+            TEMPLATE_VALUES[TEMPLATE_TABLE[lang]['target-key']] = "run-%s.exe"%(lang)
             TEMPLATE_VALUES[TEMPLATE_TABLE[lang]['section-key']] = GenerateLangSection(problem_name, lang)
 
         file_template = string.Template(infile.read())

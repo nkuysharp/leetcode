@@ -14,6 +14,7 @@ int main()
     ASSERT_EQ(-4, solution.calculate("1 - (5)"));
     ASSERT_EQ(6, solution.calculate("1+((((1+4))))"));
     ASSERT_EQ(11, solution.calculate("(7)-(0)+(4)"));
+
     return 0;
 }
 
