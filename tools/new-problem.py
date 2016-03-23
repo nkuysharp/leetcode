@@ -101,7 +101,7 @@ def GenerateLangSection(problem_name, lang):
         values = {}
         values['SRC_FILENAME'] = src_filename
         values['MAIN_FILENAME'] = main_filename
-        values[TEMPLATE_TABLE[lang]['target-key']] = "run-%s"%(lang)
+        values[TEMPLATE_TABLE[lang]['target-key']] = "run-%s.exe"%(lang)
         file_template = string.Template(infile.read())
         return file_template.substitute(values)
         
