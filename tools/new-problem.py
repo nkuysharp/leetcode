@@ -53,13 +53,13 @@ def CamelCase(problem_name):
     
 def GenerateSrcFromTemplates(src_template,
                              main_template,
+                             prob_dir,
                              problem_name,
                              src_file_suffix,
                              main_file_suffix):
 
-    dirname = os.path.abspath(os.path.join(PROBLEM_ROOT_DIR, problem_name.title()))
-    src_filename = os.path.join(dirname, "%s.%s"%(CamelCase(problem_name), src_file_suffix))
-    main_filename = os.path.join(dirname, "main.%s"%(main_file_suffix))
+    src_filename = os.path.join(prob_dir, "%s.%s"%(CamelCase(problem_name), src_file_suffix))
+    main_filename = os.path.join(prob_dir, "main.%s"%(main_file_suffix))
 
     with open(src_template, "r") as infile, open(src_filename, "w") as outfile:
         values = {}
@@ -77,7 +77,7 @@ def GenerateSrcFromTemplates(src_template,
     print "[info] file: %s is generated."%(main_filename)
         
         
-def GenerateSrcFiles(prob_name, lang_list):
+def GenerateSrcFiles(prob_dir, prob_name, lang_list):
     for lang in lang_list:
         if lang not in SUPPORTED_LANGUAGES:
             raise RuntimeError("Unsupported language type [%s]"%(lang))
@@ -89,6 +89,7 @@ def GenerateSrcFiles(prob_name, lang_list):
 
         GenerateSrcFromTemplates(src_template,
                                  main_template,
+                                 prob_dir,
                                  prob_name,
                                  src_suffix,
                                  main_suffix)
@@ -105,13 +106,12 @@ def GenerateLangSection(problem_name, lang):
         file_template = string.Template(infile.read())
         return file_template.substitute(values)
         
-def GenerateMakeFile(problem_name, lang_list):
-    dirname = os.path.abspath(os.path.join(PROBLEM_ROOT_DIR, problem_name.title()))
+def GenerateMakeFile(prob_dir, problem_name, lang_list):
     for lang in lang_list:
         if lang not in SUPPORTED_LANGUAGES:
             raise RuntimeError("Unsupported language type [%s]"%(lang))
 
-    mk_file_name = os.path.join(dirname, "makefile")
+    mk_file_name = os.path.join(prob_dir, "makefile")
     with open(mk_file_name, "w") as outfile, open(TEMPLATE_TABLE['makefile'], 'r') as infile:
         for lang in lang_list:
             TEMPLATE_VALUES[TEMPLATE_TABLE[lang]['target-key']] = "run-%s.exe"%(lang)
@@ -122,12 +122,14 @@ def GenerateMakeFile(problem_name, lang_list):
         print "[info] file: %s is generated."%(mk_file_name)
 
 def CreateProblemDirectory(prob_name):
-    dirname = os.path.abspath(os.path.join(PROBLEM_ROOT_DIR, prob_name.title()))
+    dirname = '_'.join(prob_name.title().split())
+    prob_dir = os.path.abspath(os.path.join(PROBLEM_ROOT_DIR, dirname))
     if (os.path.exists(dirname)):
         raise RuntimeError("Problem[%s] already exists."%(prob_name))
     else:
-        os.makedirs(dirname)
+        os.makedirs(prob_dir)
         print "created directory [%s]"%(dirname)
+        return prob_dir
 
 if __name__ == "__main__":
     if(len(sys.argv) < 2):
@@ -140,8 +142,8 @@ if __name__ == "__main__":
         lang_list = sys.argv[2].split(',')
         lang_list = [lang.strip() for lang in lang_list]
     
-    dirname = CreateProblemDirectory(prob_name)
-    GenerateSrcFiles(prob_name, lang_list)
-    GenerateMakeFile(prob_name, lang_list)
+    problem_dir = CreateProblemDirectory(prob_name)
+    GenerateSrcFiles(problem_dir, prob_name, lang_list)
+    GenerateMakeFile(problem_dir, prob_name, lang_list)
     
     
