@@ -62,7 +62,8 @@ namespace leetcode_util
     template <typename T> 
     bool Equal(const std::vector<T>& lhs, const std::vector<T>& rhs)
     {
-	return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+      return lhs.size() == rhs.size() ?
+        std::equal(lhs.begin(), lhs.end(), rhs.begin()) : false;
     }
 
     
