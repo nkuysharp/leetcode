@@ -2,6 +2,8 @@
 #define __LEETCODE_UTIL_H__
 
 #include <string>
+#include <iostream>
+#include <sstream>
 #include <cstring>
 #include <vector>
 
@@ -12,15 +14,14 @@ namespace leetcode_util
     
     std::string ToString(const std::string& instr) { return instr; }
     std::string ToString(const char* instr) { return std::string(instr); }
-    std::string ToString (int val) { return std::to_string(val);}
-    std::string ToString (long val) { return std::to_string(val);};
-    std::string ToString (long long val) { return std::to_string(val);}
-    std::string ToString (unsigned val) { return std::to_string(val);}
-    std::string ToString (unsigned long val) { return std::to_string(val);}
-    std::string ToString (unsigned long long val) { return std::to_string(val);}
-    std::string ToString (float val) { return std::to_string(val);}
-    std::string ToString (double val) { return std::to_string(val);}
-    std::string ToString (long double val) { return std::to_string(val);}
+
+    template <typename T>
+    std::string ToString(const T& val)
+    {
+        std::ostringstream ostr;
+        ostr << val;
+        return ostr.str();
+    }
 
     template <typename T>
     std::string ToString(const std::vector<T>& vec)
@@ -65,17 +66,10 @@ namespace leetcode_util
       return lhs.size() == rhs.size() ?
         std::equal(lhs.begin(), lhs.end(), rhs.begin()) : false;
     }
-
-    
 };
 
 
 #endif
-
-
-
-
-
 
 
 
