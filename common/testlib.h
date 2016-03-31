@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstring>
 #include "util.h"
+#include "data_structure.h"
 
 using namespace leetcode_util;
 
@@ -65,14 +66,56 @@ void assert_eq(const T& expected, const U& actual, const char* filename, int lin
     }
 }
 
+TreeNode* make_tree(const vector<string>& nodeVec, int idx);
+void delete_tree(TreeNode* root);
+
+/* despStr example: "1,2,#" or "1,2,null"  */
+/*   1                                     */
+/*  / \                                    */
+/* 2   null                                */
+TreeNode* MAKE_BINARY_TREE(const std::string& despStr)
+{
+    vector<string> nodeVec = split(despStr, ",");
+    TreeNode* root = make_tree(nodeVec, 0);
+    return root;
+}
+
+TreeNode* make_tree(const vector<string>& nodeVec, int idx)
+{
+    if (idx >= nodeVec.size())
+    {
+	return NULL;
+    }
+    if (nodeVec[idx] == "#"
+	|| nodeVec[idx] == "null"
+	|| nodeVec[idx] == "NULL")
+    {
+	return NULL;
+    }
+    int val = fromString<int>(nodeVec[idx]);
+    TreeNode* root = new TreeNode(val);
+    root->left = make_tree(nodeVec, 2*idx+1);
+    root->right = make_tree(nodeVec, 2*idx+2);
+    return root;
+}
+
+void DELETE_BINARY_TREE(TreeNode* root)
+{
+    delete_tree(root);
+}
+
+void delete_tree(TreeNode* root)
+{
+    if (root)
+    {
+	delete_tree(root->left);
+	delete_tree(root->right);
+	delete root;
+    }
+}
 
 
 #endif
-
-
-
-
-
 
 
 

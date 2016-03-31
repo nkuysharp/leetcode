@@ -9,6 +9,32 @@
 
 namespace leetcode_util
 {
+    std::vector<std::string> split(const std::string& srcStr,
+				   const std::string& delim,
+				   bool ignoreEmpty = true)
+    {
+	std::vector<std::string> vec;
+	std::string str(srcStr);
+	std::string sep(delim);
+	size_t n = 0, old = 0;
+	while (n != std::string::npos)
+	{
+	    n = str.find(sep,n);
+	    if (n != std::string::npos)
+	    {
+		if (!ignoreEmpty || n != old) 
+		    vec.push_back(str.substr(old, n-old));
+		n += sep.length();
+		old = n;
+	    }
+	}
+
+	if (!ignoreEmpty || old < str.length()) {
+	    vec.push_back(str.substr(old, str.length() - old));
+	}
+	return vec;
+    }
+
     std::string StringJoin(const std::vector<std::string>& strlist,
 			   const std::string& sperator);
     
@@ -32,6 +58,65 @@ namespace leetcode_util
 	    strlist.push_back(ToString(*iter));
 	}
 	return std::string("[") + StringJoin(strlist, ",") + std::string("]");
+    }
+
+    void trim(std::string& str) {
+	str.erase(str.find_last_not_of(' ') + 1);
+	str.erase(0, str.find_first_not_of(' '));
+    }
+    
+    // fromString
+    bool fromString(const std::string& srcStr)
+    {
+	string trimStr = srcStr;
+	trim(trimStr);
+	if (trimStr == "t"
+	    || trimStr == "true"
+	    || trimStr == "True"
+	    || trimStr == "TRUE"
+	    || trimStr == "y"
+	    || trimStr == "yes"
+	    || trimStr == "Yes"
+	    || trimStr == "YES"
+	    || trimStr == "1")
+	{
+	    return true;
+	}
+	else
+	{
+	    return false;
+	}
+    }
+
+    template <typename T>
+    T fromString(const std::string& srcStr)
+    {
+	T val = T();
+	std::istringstream iss(srcStr);
+	iss >> val;
+	if (iss.fail())
+	{
+	    throw runtime_error("convert string failed.");
+	}
+	return val;
+    }
+
+    template <typename T>
+    void fromString(std::vector<std::string>& strVec, std::vector<T>& vec)
+    {
+	vec.clear();
+	vec.reserve(strVec.size());
+	for (size_t i = 0; i < strVec.size(); ++i)
+	{
+	    vec.push_back(fromString<T>(strVec[i]));
+	}
+    }
+
+    template <typename T>
+    void fromString(const std::string& srcStr, std::vector<T>& vec, const std::string& delim)
+    {
+	std::vector<std::string> strVec = split(srcStr, delim);
+	fromString(strVec, vec);
     }
 
     std::string StringJoin(const std::vector<std::string>& strlist,
@@ -68,14 +153,4 @@ namespace leetcode_util
     }
 };
 
-
 #endif
-
-
-
-
-
-
-
-
-
