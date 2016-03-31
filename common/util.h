@@ -6,9 +6,15 @@
 #include <sstream>
 #include <cstring>
 #include <vector>
+#include <typeinfo>
 
 namespace leetcode_util
 {
+    void trim(std::string& str) {
+	str.erase(str.find_last_not_of(' ') + 1);
+	str.erase(0, str.find_first_not_of(' '));
+    }
+
     std::vector<std::string> split(const std::string& srcStr,
 				   const std::string& delim,
 				   bool ignoreEmpty = true)
@@ -22,15 +28,23 @@ namespace leetcode_util
 	    n = str.find(sep,n);
 	    if (n != std::string::npos)
 	    {
-		if (!ignoreEmpty || n != old) 
-		    vec.push_back(str.substr(old, n-old));
+		if (!ignoreEmpty || n != old)
+		{
+		    std::string item = str.substr(old, n-old);
+		    trim(item);
+		    vec.push_back(item);
+		}
+
 		n += sep.length();
 		old = n;
 	    }
 	}
 
-	if (!ignoreEmpty || old < str.length()) {
-	    vec.push_back(str.substr(old, str.length() - old));
+	if (!ignoreEmpty || old < str.length())
+	{
+	    std::string item = str.substr(old, str.length() - old);
+	    trim(item);
+	    vec.push_back(item);
 	}
 	return vec;
     }
@@ -60,10 +74,6 @@ namespace leetcode_util
 	return std::string("[") + StringJoin(strlist, ",") + std::string("]");
     }
 
-    void trim(std::string& str) {
-	str.erase(str.find_last_not_of(' ') + 1);
-	str.erase(0, str.find_first_not_of(' '));
-    }
     
     // fromString
     bool fromString(const std::string& srcStr)
@@ -96,6 +106,8 @@ namespace leetcode_util
 	iss >> val;
 	if (iss.fail())
 	{
+	    std::cerr << "try to convert [" << srcStr << "] to "
+		      << typeid(val).name() << " failed" << std::endl;
 	    throw runtime_error("convert string failed.");
 	}
 	return val;

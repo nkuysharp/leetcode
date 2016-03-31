@@ -113,8 +113,6 @@ void delete_tree(TreeNode* root)
 	delete root;
     }
 }
-
-
 #endif
 
 
